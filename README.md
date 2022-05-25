@@ -39,10 +39,6 @@ In command line, navigate to the Neo4j folder where you unzipped the download
 Run ./bin/neo4j console to start the server
 Run CTRL+C to stop the server
 
-##### From command line 
-
-### Running Neo4j in R 
-
 ### Data pre-processing input files 
 
 1. Processing metadata file
@@ -119,7 +115,7 @@ Rscript src/belongs_To.Edge.R src/ KO.node.test4.csv EC.node.test4.csv KEGGOrtho
 ### Populating a database model in Neo4j
 1. Move previoulsy generated output files to the Neo4j `import` folder. 
 2. Create a ibd database under `data/database` folder. Then, change the name of database in the neo4j configuration file under the `conf` folder.
-*Note for naming rules: [Naming rules and recommendations](https://neo4j.com/docs/cypher-manual/current/syntax/naming/)*
+*Note*: [Naming rules and recommendations](https://neo4j.com/docs/cypher-manual/current/syntax/naming/)
 ```
 mkdir data/databases/`ibd.db`
 ```
@@ -127,9 +123,17 @@ mkdir data/databases/`ibd.db`
 ```
 dbms.default_database=ibd
 ```
-4. Now, we are ready to import data files using `neo4j-import` tool. 
+4. Now, we are ready to import data files using `neo4j-import` tool. <br/>
+*Note*: [Neo4j-admin-import](https://neo4j.com/docs/operations-manual/current/tutorial/neo4j-admin-import/)
 ```
 ./bin/neo4j-admin import --database=ibd --nodes=participant.node.test4.csv --nodes=sample.node.test4.csv --nodes=Gene.node.test4.csv --nodes=KeggPathway.node.test4.csv --nodes=KO.node.test4.csv --nodes=Compound.node.test4.csv --nodes=Metabolite.node.test4.csv --nodes=EC.node.test4.csv --nodes=Serum.node.test4.csv --nodes=Kingdom.node.test4.csv --nodes=Phylum.node.test4.csv --nodes=Class.node.test4.csv --nodes=Order.node.test4.csv --nodes=Family.node.test4.csv --nodes=Genus.node.test4.csv --nodes=Species.node.test4.csv --nodes=Strain.node.test4.csv --relationships=participant_sample.edge.test4.csv --relationships=sample_hostGene.edge.test4.csv --relationships=sample_microbialGene.edge.test4.csv --relationships=sample_KeggPathway_mgx.edge.test4.csv --relationships=sample_KeggPathway_mtx.edge.test4.csv --relationships=sample_KO_mgx.edge.test4.csv --relationships=sample_KO_mpx.edge.test4.csv --relationships=sample_EC_mgx.edge.test4.csv --relationships=sample_EC_mtx.edge.test4.csv --relationships=sample_EC_mpx.edge.test4.csv --relationships=sample_serum.edge.test4.csv --relationships=sample_16sBiopsy_K.edge.test4.csv --relationships=sample_16sBiopsy_P.edge.test4.csv --relationships=sample_16sBiopsy_C.edge.test4.csv --relationships=sample_16sBiopsy_O.edge.test4.csv --relationships=sample_16sBiopsy_F.edge.test4.csv --relationships=sample_16sBiopsy_G.edge.test4.csv --relationships=sample_MGX_K.edge.test4.csv --relationships=sample_MGX_P.edge.test4.csv --relationships=sample_MGX_C.edge.test4.csv --relationships=sample_MGX_O.edge.test4.csv --relationships=sample_MGX_F.edge.test4.csv --relationships=sample_MGX_G.edge.test4.csv --relationships=sample_MGX_Sp.edge.test4.csv --relationships=sample_MGX_St.edge.test4.csv --relationships=sample_MVX_K.edge.test4.csv --relationships=sample_MVX_P.edge.test4.csv --relationships=sample_MVX_C.edge.test4.csv --relationships=sample_MVX_O.edge.test4.csv --relationships=sample_MVX_F.edge.test4.csv --relationships=sample_MVX_G.edge.test4.csv --relationships=sample_MVX_Sp.edge.test4.csv --relationships=sample_polarNeg_cp.edge.test4.csv --relationships=sample_polarPos_cp.edge.test4.csv --relationships=sample_InterMediate_cp.edge.test4.csv --relationships=sample_lipid_cp.edge.test4.csv --relationships=compound_metabolite.edge.test4.csv --relationships=belongs_To.edge.test4.csv
 ```
-
+### Start the Neo4j server 
+```
+./bin/neo4j start    
+```
+#### *If your current location is already in the bin folder*
+```
+./neo4j start
+```
 

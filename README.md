@@ -25,10 +25,12 @@ From command line
   3. 
 
 #### Download IBDMDB Data 
-1. Go visit the [The Inflammatory Bowel Disease Multi'omics Database](https://ibdmdb.org/) website. 
-2. On the `Download Data` tab, we use batch downloading using FTP transfer tool.  
+1. Download the datasets from [The Inflammatory Bowel Disease Multi'omics Database](https://ibdmdb.org/) website. 
+2. Use FTP transfer tool for batch downloading.
 3. Copy `ftp.broadinstitute.org` address and paste it in new tab, with adding 'ftp` instead 'http'.
 4. Once open the folder, use given `username/password` to access the datasets. 
+
+
 
 
 Download the macOS version of Neo4j listed under Community server

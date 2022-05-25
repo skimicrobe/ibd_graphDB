@@ -104,13 +104,15 @@ Rscript src/serum.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2
 
 8. Processing Gene profile 
 * `Input files`: **_Host transcriptome_**: host_tx_counts.tsv, **_Metatranscriptome_**: genefamilies.tsv
+* `Output node file`: Gene.node.ibd_dataset.csv<br/>
+* `Output relationship files`: sample_microbialGene.edge.ibd_dataset.csv, sample_hostGene.edge.ibd_dataset.csv
 ```
-Rscript src/gene.Node_AND_Edge.R src/ ../../ihmp/ftp.broadinstitute.org/products/HMP2/HTX/host_tx_counts.tsv ../../ihmp/ftp.broadinstitute.org/products/HMP2/MTX/2017-12-14/genefamilies.tsv sample.node.ibd_dataset.csv ibd_dataset
+Rscript src/gene.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/HTX/host_tx_counts.tsv ihmp/ftp.broadinstitute.org/products/HMP2/MTX/2017-12-14/genefamilies.tsv sample.node.ibd_dataset.csv ibd_dataset
 ```
 
 9. Processing BELONG_TO edge file 
 * `Input files`: KO.node.ibd_dataset.csv, EC.node.ibd_dataset.csv, KEGGOrthology_ECnum.csv<br/>
-* `Output file`: belongs_To.edge.test4.csv
+* `Output file`: belongs_To.edge.ibd_dataset.csv
 ```
 Rscript src/belongs_To.Edge.R src/ KO.node.ibd_dataset.csv EC.node.ibd_dataset.csv KEGGOrthology_ECnum.csv ibd_dataset
 ```

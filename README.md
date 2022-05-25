@@ -119,7 +119,7 @@ Rscript src/belongs_To.Edge.R src/ KO.node.ibd_dataset.csv EC.node.ibd_dataset.c
 2. Create a ibd database under `data/database` folder. Then, change the name of database in the neo4j configuration file under the `conf` folder.
 *Note*: [Naming rules and recommendations](https://neo4j.com/docs/cypher-manual/current/syntax/naming/)
 ```
-mkdir data/databases/`ibd.db`
+mkdir data/databases/ibd
 ```
 3. Then, change the name of the default database in the neo4j configuration file under the `conf` folder. 
 ```

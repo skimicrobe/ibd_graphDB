@@ -4,7 +4,7 @@ Multi-Omics integrated graph database. Our graph database provides a useful anal
 
 Contact the author at suyeonkim [at] unomaha.edu. This version has been tested for OSX. 
 ## Steps for populating the multi-omics graph database
-![graphDB_diagram.png](graphDB_diagram.png)
+![graphDB_diagram.png](graphDB_in_out_diagram.png)
 
 ### Pre-requisites
 Please make sure you have Conda installed. 

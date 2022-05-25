@@ -51,7 +51,7 @@ Rscript src/participant_sample.Node_AND_Edge.R src/ input/correct_metadata.csv i
 
 2. Processing Taxonomic profile
 * `Input file`: *16s Biopsy*: taxonomic_profiles.tsv , *Metagenome*: taxonomic_profiles.tsv , and *Virome*: taxonomic_profiles.tsv
-* `Output node files`: Kingdom/Phylum/Class/Order/Family/Genus/Species/Strain.node.test4.csv<br/> 
+* `Output node files`: Kingdom/Phylum/Class/Order/Family/Genus/Species/Strain.node.ibd_dataset.csv<br/> 
 * `Output relationship files`: sample_16sBiopsy_K/P/C/O/F/G.edge.ibd_dataset.csv, sample_MGX_K/P/C/O/F/G/Sp/St.edge.ibd_dataset.csv, sample_MVX_K/P/C/O/F/G/Sp.edge.ibd_dataset.csv
 ```
 Rscript src/taxon.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/16S/2018-01-07/taxonomic_profiles.tsv ihmp/ftp.broadinstitute.org/products/HMP2/MGX/2018-05-04/taxonomic_prof_processing/taxonomic_profiles.tsv mihmp/ftp.broadinstitute.org/products/HMP2/MVX/taxonomic_profiles.tsv sample.node.test4.csv test4

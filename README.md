@@ -58,3 +58,19 @@ Run CTRL+C to stop the server
 Steps for populating the database and running the server
 ### raw files
 
+
+
+
+### Data Preprocessing
+1. Processing metadata file
+```
+Rscript src/processed_metaData.R src/ Input/hmp2_metadata-20180820.csv
+Rscript src/participant_sample.Node_AND_Edge.R src/ correct_metadata.csv test4
+
+```
+
+2. Processing taxonomic profile
+```
+Rscript src/taxon.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/16S/2018-01-07/taxonomic_profiles.tsv ihmp/ftp.broadinstitute.org/products/HMP2/MGX/2018-05-04/taxonomic_prof_processing/taxonomic_profiles.tsv mihmp/ftp.broadinstitute.org/products/HMP2/MVX/taxonomic_profiles.tsv sample.node.test4.csv test4
+```
+4. Pr

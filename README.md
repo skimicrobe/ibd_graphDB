@@ -43,6 +43,7 @@ Run CTRL+C to stop the server
 * `Input file`: hmp2_metadata-20180820.csv for first script, Output of `processed_metaData.R`(first script) `correct_metadata.csv` is an input for second script.
 * `Output node files`: participant.node.ibd_dataset.csv, sample.node.ibd_dataset.csv<br/>
 * `Output relationship files`: participant_sample.edge.ibd_dataset.csv
+* `ibd_dataset`: suffix for the output files of this step
 ```
 Rscript src/processed_metaData.R src/ Input/hmp2_metadata-20180820.csv
 Rscript src/participant_sample.Node_AND_Edge.R src/ input/correct_metadata.csv ibd_dataset

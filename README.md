@@ -20,7 +20,7 @@ From command line
   2. Download the macOS version of Neo4j listed under community server and unzip the Neo4j downalod in a folder of your choice. 
   ```
   wget https://neo4j.com/artifact.php?name=neo4j-community-4.3.13-unix.tar.gz
-  tar -xf neo4j-community-4.3.13-unix.tar.gz
+  tar -zxvf neo4j-community-4.3.13-unix.tar.gz
   ```
   3. Make sure JAVA version *** 
 

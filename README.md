@@ -22,7 +22,7 @@ From command line
   wget https://neo4j.com/artifact.php?name=neo4j-community-4.3.13-unix.tar.gz
   tar -zxvf neo4j-community-4.3.13-unix.tar.gz
   ```
-  3. Make sure JAVA version *** 
+  3. For this version of neo4j, we used openjdk version "11.0.9.1" 2020-11-04 LTS JAVA.
 
 ### Download IBDMDB Data 
 1. Download the datasets from [The Inflammatory Bowel Disease Multi'omics Database](https://ibdmdb.org/) website. 

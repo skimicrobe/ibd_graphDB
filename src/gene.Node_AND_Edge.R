@@ -4,23 +4,20 @@
 # Created: April 13, 2022                                                      #
 # Last edited: April 13, 2022                                                  #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
+# Goal: The purpose of this script is to create a Gene node and sample-hostgene# 
+#       edges file and sample-microbialgene edges in neo4j bulk importer format#
 # Input: 1) Three processed Gene data (metatranscriptomic and host             #
 #           metranscriptome folder from ibdmdb database are needed.            #
-#        2) sample.node.[NAME WILL BE VARIED! - 'test1' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
+#        2) sample.node.[output argument].csv                                  #
 # Output: a GENE node and sample_microbialGene/ hostGene edge list             #                         
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile1<- args[2]
 InFile2<- args[3]
@@ -31,6 +28,8 @@ outName<- args[5]
 # "stringsAsFactors=FALSE".
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
+# In this function, we want to replace the gene name and sample ID with 
+# the created sample Ids and gene Ids. 
 get_Ids<- function(abundance, entity_Node, entity_1, entity_2, sample_info){
   print(dim(abundance))
   # Merge abudance data with Gene Node dataframe based on entity_1 
@@ -51,6 +50,7 @@ get_Ids<- function(abundance, entity_Node, entity_1, entity_2, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format.
 reshape_dat<- function(new_abundance, by_melt){
   reshape_dat<- melt(new_abundance, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID:ID"=as.character(reshape_dat$variable), 
@@ -84,7 +84,7 @@ sample_info<- sample_N %>% select(c("s_ID:ID", "External_ID", "data_type"))
 # Main Program: Create a GENE Node                                             #
 # Input: hGene_dat and mGene_dat                                               #
 # Return: gene_node                                                            #
-# Note: Required source files - formatting_data_neo4j.R and filtering_Input.R  #
+# Note: Required source files - formatting_data_neo4j.R, filtering_Input.R     #
 ################################################################################
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))
 source(paste0(sourceDir,"/","filtering_Input.R"))
@@ -125,8 +125,7 @@ gene_node<- cbind("gene_ID"=gene_uniqIds, all_gene)
 ################################################################################
 # Main Program: Create a Sample-Microbial-Gene Edge                            #
 # Input: gene_node, sample_info, and filt_mGene                                #
-# Return:                                                                      #
-# Note:                                                                        #
+# Return: reshape_mGene dataframe                                              #
 ################################################################################
 # Subset MTX samples in sample_info dataframe.
 mtx_sample<- sample_info[sample_info$data_type == "metatranscriptomics",]
@@ -142,8 +141,7 @@ reshape_mGene<- reshape_dat(new_mGene_ab, by_melt = "gene_ID")
 ################################################################################
 # Main Program: Create a Sample-Host-Gene Edge.                                #
 # Input: gene_node, sample_info, and filt_hGene                                #
-# Return:                                                                      #
-#                                                                              #
+# Return: reshape_hGene dataframe                                              #
 ################################################################################
 # Subset MTX samples in sample_info dataframe.
 htx_sample<- sample_info[sample_info$data_type == "host_transcriptomics",]
@@ -163,7 +161,7 @@ reshape_hGene<- reshape_dat(new_hGene_ab, by_melt = "gene_ID")
 ################################################################################
 # Main Program: Reformat data in neo4j-admin import format and Save Output     #
 # Input: gene_node, reshape_mGene, and reshape_hGene                           #
-# Return:                                                                      #
+# Return: neo4j_gene_Node, neo4j_mGene_edge, and neo4j_hGene_edge              #
 # Note: Required source file called "formatting_data_neo4j.R"                  #
 ################################################################################
 # Process Gene_node in neo4j-import format 

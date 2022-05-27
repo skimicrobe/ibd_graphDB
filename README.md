@@ -30,7 +30,7 @@ From command line
 ### Data pre-processing input files 
 
 1. Processing metadata file
-* `Input file`: hmp2_metadata-20180820.csv for first script, Output of `processed_metaData.R`(first script) `correct_metadata.csv` is an input for second script.
+* `Input file`: hmp2_metadata-20180820.csv and 'skim_newmeta.tsv' for first script, Output of `processed_metaData.R`(first script) `correct_metadata.csv` is an input for second script.
 * `Output node files`: participant.node.ibd_dataset.csv, sample.node.ibd_dataset.csv<br/>
 * `Output relationship files`: participant_sample.edge.ibd_dataset.csv
 * `ibd_dataset`: suffix for the output files of this step

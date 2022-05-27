@@ -30,13 +30,6 @@ From command line
 3. Copy `ftp.broadinstitute.org` address and paste it in new tab, with adding 'ftp` instead 'http'.
 4. Once open the folder, use given `username/password` to access the datasets. 
 
-
-Download the macOS version of Neo4j listed under Community server
-Unzip the Neo4j download in a folder of your choice
-In command line, navigate to the Neo4j folder where you unzipped the download
-Run ./bin/neo4j console to start the server
-Run CTRL+C to stop the server
-
 ### Data pre-processing input files 
 
 1. Processing metadata file
@@ -55,10 +48,6 @@ Rscript src/participant_sample.Node_AND_Edge.R src/ input/correct_metadata.csv i
 * `Output relationship files`: sample_16sBiopsy_K/P/C/O/F/G.edge.ibd_dataset.csv, sample_MGX_K/P/C/O/F/G/Sp/St.edge.ibd_dataset.csv, sample_MVX_K/P/C/O/F/G/Sp.edge.ibd_dataset.csv
 ```
 Rscript src/taxon.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/16S/2018-01-07/taxonomic_profiles.tsv ihmp/ftp.broadinstitute.org/products/HMP2/MGX/2018-05-04/taxonomic_prof_processing/taxonomic_profiles.tsv mihmp/ftp.broadinstitute.org/products/HMP2/MVX/taxonomic_profiles.tsv sample.node.test4.csv test4
-```
-**_TEST_in CRANE**
-```
-Rscript src/taxon.Node_AND_Edge.R src/ ../../ihmp/ftp.broadinstitute.org/products/HMP2/16S/2018-01-07/taxonomic_profiles.tsv ../../ihmp/ftp.broadinstitute.org/products/HMP2/MGX/2018-05-04/taxonomic_prof_processing/taxonomic_profiles.tsv ../../ihmp/ftp.broadinstitute.org/products/HMP2/MVX/taxonomic_profiles.tsv sample.node.ibd_dataset.csv ibd_dataset
 ```
 
 3 Processing KEGG Orthologue profile

@@ -4,22 +4,19 @@
 # Created: April 17, 2022                                                      #
 # Last edited: April 17, 2022                                                  #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
-# Input: 1) Three processed serology data from ibdmdb database are needed.     #
-#        2) sample.node.[NAME WILL BE VARIED! - 'test2' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
+# Goal: The purpose of this script is to create a Serum nodes and sample-serum #
+#       edges file in neo4j bulk importer format.                              #
+# Input: 1) hmp2_serology_Compiled_ELISA_Data.tsv                              #
+#        2) sample.node.[output argument].csv                                  #
 # Output: a Serum node and sample_serum edge list                              #
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile<- args[2]
 sample_node<- args[3]
@@ -29,9 +26,11 @@ outName<- args[4]
 # "stringsAsFactors=FALSE".
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
+# In this function, we want to replace the serum marker name and sample ID with 
+# the created sample Ids and serum marker Ids. 
 get_Ids<- function(abundance, entity_Node, entity, sample_info){
   print(dim(abundance))
-  # Merge abudance data with Pathway Node dataframe based on entity
+  # Merge abudance data with serum marker Node dataframe based on entity
   merged_serumId<- merge(abundance, entity_Node, by=c(entity))
   filter_cols<- merged_serumId %>% select(-c(entity, "Serum"))
   matched_sampleIndex<- 
@@ -47,6 +46,7 @@ get_Ids<- function(abundance, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format.
 reshape_dat<- function(new_abundance, by_melt){
   reshape_dat<- melt(new_abundance, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID:ID"=as.character(reshape_dat$variable), 
@@ -60,7 +60,7 @@ reshape_dat<- function(new_abundance, by_melt){
 }
 
 ###############################################################################
-# Read the Input file into R. 
+# Read the Input file into R.                                                 #
 ###############################################################################
 # This should result in a dataframe called 'serum_dat' that contains 
 # 14 observations of 212 variables. 
@@ -72,9 +72,10 @@ sample_N<- read.csv(sample_node, header=T, sep=",", check.names=FALSE)
 sample_info<- sample_N %>% select(c("s_ID:ID", "External_ID", "data_type"))
 
 ###############################################################################
-# Main Program: Create a Serum Node 
-# Input: serum_dat 
-# Return: 
+# Main Program: Create a Serum Node                                           #
+# Input: serum_dat                                                            #
+# Return: serum_node data                                                     #
+# Note: Required source files - formatting_data_neo4j.R                       #    
 ###############################################################################
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))
 

@@ -5,11 +5,10 @@
 # Last edited: Feb 25, 2022                                                    #
 #                                                                              #
 # Goal: The purpose of this script is to create a Participant, sample nodes and# 
-#     particiapnt_sample edges file in neo4j bulk importer format              #
-# Input: HMP2 metadata from ibdmdb database. [Required editing]: We used output#
-#        from 'merged_clinicalData.R'                                          # 
+#     particiapnt_sample edges file in neo4j bulk importer format.             #
+# Input: HMP2 metadata from ibdmdb database. This input file is required to be #
+#        processed by 'merged_clinicalData.R' script.                          # 
 # Output: a participant node, a sample node, and participant_sample edge list  #  
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 
 # Install the package if you don't installed yet. 

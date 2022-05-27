@@ -87,7 +87,7 @@ Rscript src/ec.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/MG
 ```
 
 6. Processing Metabolite profile 
-* `Input file`: iHMP_metabolite.cleaned.tsv
+* `Input file`: HMP2_metabolomics.csv
 * `Output node files`: Compound.node.ibd_dataset.csv, Metabolite.node.ibd_dataset.csv<br/>
 * `Output relationship files`: sample_polarNeg_cp.edge.ibd_dataset.csv, sample_polarPos_cp.edge.ibd_dataset.csv, sample_InterMediate_cp.edge.ibd_dataset.csv, sample_lipid_cp.edge.ibd_dataset.csv, compound_metabolite.edge.ibd_dataset.csv
 ```

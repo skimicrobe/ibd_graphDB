@@ -47,7 +47,7 @@ Rscript src/participant_sample.Node_AND_Edge.R src/ input/correct_metadata.csv i
 Rscript src/taxon.Node_AND_Edge.R src/ ihmp/ftp.broadinstitute.org/products/HMP2/16S/2018-01-07/taxonomic_profiles.tsv ihmp/ftp.broadinstitute.org/products/HMP2/MGX/2018-05-04/taxonomic_prof_processing/taxonomic_profiles.tsv mihmp/ftp.broadinstitute.org/products/HMP2/MVX/taxonomic_profiles.tsv sample.node.test4.csv test4
 ```
 
-3 Processing KEGG Orthologue profile
+3. Processing KEGG Orthologue profile
 * `Input file`: **Metagenome**: kos_realb.slim.tsv and **Metaproteome**: HMP2_proteomics_kos.tsv
 * `Output node files`: KO.node.ibd_dataset.csv<br/> 
 * `Output relationship files`: sample_KO_mgx.edge.ibd_dataset.csv, sample_KO_mpx.edge.ibd_dataset.csv, 

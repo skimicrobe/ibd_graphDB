@@ -4,19 +4,18 @@
 # Created: April 07, 2022                                                      #
 # Last edited: April 11, 2022                                                  # 
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
-# Input: three 'taxonomic_profiles.tsv' from three sources: MGX/2018-05-04/,   #
-#        16S/2018-01-07/, and MVX/                                             #  
+# Goal: The purpose of this script is to create a taxon nodes and sample-taxon #
+#       edges file in neo4j bulk importer format.                              #
+# Input: 1) three 'taxonomic_profiles.tsv' from three sources: MGX/2018-05-04/ #
+#        16S/2018-01-07/, and MVX folder                                       #
+#        2) sample.node.[output argument].csv                                  #
 #                                                                              #
-# Output:                                                                      #
-# (in neo4j bulk importer format).                                             #
+# Output: a Taxon node and sample_[K/P/C/O/F/G/Sp/St] edge list                #
 ################################################################################
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
 sourceDir <- args[1]
@@ -30,6 +29,9 @@ outName<- args[6]
 # "stringsAsFactors=FALSE".
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
+# In this function, we want to create individual nodes repre-
+# senting all levels of taxonomy, i.e. Kingdom, Phylum, Class, Order,
+# Family, Genus, Species, and Strain. 
 create_taxonLineage<- function(rank, list_taxonomy){
   # Let's identify the lineage for each taxonomy rank
   print(paste("This is the taxonomy rank", rank))
@@ -47,6 +49,8 @@ create_taxonLineage<- function(rank, list_taxonomy){
   return(unique_parent_child)
 }
 
+# In this function, we want to create a taxon node in each level of taxonomy, 
+# creating taxon-ids. 
 format_TaxonNode<- function(rank, taxon_Inf, taxon_name, 
                             prev_Taxon) {
   # In order to assigning taxon-Id index, we need multiple resources to create 
@@ -93,14 +97,17 @@ format_TaxonNode<- function(rank, taxon_Inf, taxon_name,
   return(taxon_Node)
 }
 
+# In this function, we want to create abundance dataframes based on the 
+# taxonomic rank.
 get_abundance<- function(mgx_tax, rank){
-  # We want to create abundance dataframes based on the taxonomic rank.
   taxon_dat<- mgx_tax[which(str_count(rownames(mgx_tax), "\\|") == rank),]
   tax_ab<- data.frame("lineage"=rownames(taxon_dat), taxon_dat)
   rownames(tax_ab)<- NULL
   return(tax_ab)
 }
 
+# In this function, we want to replace the taxon name and sample ID with 
+# the created sample Ids and taxon Ids for 16s abundance and MVX data 
 get_16s_Ids<- function(taxon_dat, entity_Node, entity, sample_info){
   print(dim(taxon_dat))
   merged_Taxon<-merge(taxon_dat, entity_Node, by.x=c(entity,'ancestral_lineage'), 
@@ -117,6 +124,8 @@ get_16s_Ids<- function(taxon_dat, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we want to replace the taxon name and sample ID with 
+# the created sample Ids and taxon Ids for MGX abundance data 
 get_mgx_Ids<- function(taxon_dat, entity_Node, entity, sample_info){
   print(dim(taxon_dat))
   merged_mgx<- merge(taxon_dat, entity_Node, by=c("lineage"))
@@ -132,6 +141,7 @@ get_mgx_Ids<- function(taxon_dat, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format.
 reshape_taxonDat<- function(abundance_dat, by_melt){
   reshape_dat<- melt(abundance_dat, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID"=as.character(reshape_dat$variable),
@@ -141,6 +151,7 @@ reshape_taxonDat<- function(abundance_dat, by_melt){
   return(final_ab)
 }
 
+# In this function, we reformat edge table in Neo4j import format.
 edge_Neo4j<- function(reshape_dat, edge_label){
   names(reshape_dat)[names(reshape_dat) == "s_ID"]<- ":START_ID"
   names(reshape_dat)[names(reshape_dat) == "tx_Id:ID"]<- ":END_ID"
@@ -269,7 +280,7 @@ print(paste("This is the size of ", dim(strain_Node)))
 # Main Program: Create a Sample-16sBiopsy-Taxon Edge                           #
 # Input: Kingdom, Phylum, Class, Order, Family, Genus, Species, Strain Nodes,  #
 #        sample_info, and biopsy_tax                                           #
-# Return:                                                                      #
+# Return: neo4j format for 16s biopsy data                                     #
 ################################################################################
 source(paste0(sourceDir,"/","taxonAbundance_generator_Aim1.R"))
 
@@ -334,7 +345,7 @@ print("Compeleted sample-16sBiopsy data")
 # Main Program: Create a Sample-Metagenomics-Taxon Edge                        #
 # Input: Kingdom, Phylum, Class, Order, Family, Genus, Species, Strain Nodes,  #
 #        sample_info, and mgx_tax                                              #
-# Return:                                                                      #
+# Return: neo4j format for mgx data                                            #
 ################################################################################
 k_mgx_ab<- get_abundance(mgx_tax, rank=0)
 p_mgx_ab<- get_abundance(mgx_tax, rank=1)
@@ -396,7 +407,7 @@ neo4j_St_mgx<- edge_Neo4j(reshp_mgx_st,
 # Main Program: Create a Sample-MVX-Taxon Edge                                 #
 # Input: Kingdom, Phylum, Class, Order, Family, Genus, Species, Strain Nodes,  #
 #        sample_info, and mvx_tax                                              #
-# Return:                                                                      #
+# Return: neo4j format for mvx data                                            #
 ################################################################################
 # Split 'taxonomy' column into number of taxons in taxonomy lineage.
 split_taxon<- data.frame(str_split_fixed(rownames(mvx_tax), "\\|", n=7))

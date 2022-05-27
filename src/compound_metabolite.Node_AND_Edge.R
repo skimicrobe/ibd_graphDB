@@ -6,21 +6,19 @@
 #                                                                              #
 # Goal: The purpose of this script is to create a nodes and edges file in      #
 # neo4j bulk importer format (neo4j-admin import tool).                        #
-# Input: 1) Metabolite data from ibdmdb database are needed to be downloaded.  # 
-#        2) sample.node.[NAME WILL BE VARIED! - 'test2' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
-# Output: compound & metabolite nodes, sample_compound edge list, and          # 
-#         compound-metabolite edge                                             #
-# (in neo4j bulk importer format).                                             #
+# Input: 1) HMP2_metabolomics.csv                                              # 
+#        2) sample.node.[output argument].csv                                  #  
+#                                                                              #
+# Output: compound & metabolite nodes, four sample_compound edge list          #
+#         (by technogloy), and  compound-metabolite edge                       #
 ################################################################################
-
 library(stringr)
 library(dplyr)
 library(reshape2)
 
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile<- args[2]
 sample_node<- args[3]
@@ -30,7 +28,7 @@ outName<- args[4]
 # "stringsAsFactors=FALSE".
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
-# In this function, we want to remove if the columns has all NAs. 
+# In this function, we want to remove if the columns have all NAs. 
 Identify_missingColumns <- function(metabolite_dat) {
   all_missingCol <-
     colnames(metabolite_dat)[colSums(is.na(metabolite_dat)) == 
@@ -46,13 +44,16 @@ Identify_missingColumns <- function(metabolite_dat) {
   return(filt_metabolite)
 }
 
-# In this function, we want to subset abundance data based on the technologies. 
+# In this function, we want to subset abundance data based on the 
+# metabolomics technology
 subset_data<- function(methodType=method_type, filt_metabolite){
   print(paste("Subsetting data - technology name:", print(methodType)))
   subset_dat<- filt_metabolite[grep(methodType, filt_metabolite$Method),]
   return(subset_dat)
 }
 
+# In this function, we want to replace the compound name and sample ID with 
+# the created sample Ids and compound Ids. 
 get_CompoundIds<- function(abundance, entity_Node, entity, sample_info){
   print(dim(abundance))
   # Merge abudance data with Compound Node dataframe based on entity
@@ -63,7 +64,7 @@ get_CompoundIds<- function(abundance, entity_Node, entity, sample_info){
                       sample_info$External_ID),1]
   colnames(filter_cols)[7:ncol(filter_cols)-1]<- matched_sampleIndex
   
-  # Create abundance table only with created compound-ids and sample-ids
+  # Create abundance table only with created compound Ids and sample Ids
   final_ab<- cbind("compound_ID"=filter_cols$compound_ID, 
                    filter_cols[,-ncol(filter_cols)])
   print("**********Before Reshape final_ab *******")
@@ -72,6 +73,7 @@ get_CompoundIds<- function(abundance, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format. 
 reshape_CompoundInfo<- function(new_abundance, by_melt){
   reshape_dat<- melt(new_abundance, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID:ID"=as.character(reshape_dat$variable), 
@@ -88,12 +90,12 @@ reshape_CompoundInfo<- function(new_abundance, by_melt){
   
   return(final_ab)
 }
+
 ################################################################################
 # Read the Input file into R.                                                  #
 ################################################################################
 # This should result in a dataframe called 'metabolite_dat' that contains 
 # 81867 observations of 553 variables. 
-#metabolite_dat <-read.csv(paste0(InFile))  # iHMP_metabolite.cleaned.tsv 
 metabolite_dat<- read.csv(paste0(InFile), quote='"')
 
 # Remove If columns have all NAs. 
@@ -107,6 +109,7 @@ sample_info<- sample_N %>% select(c("s_ID:ID", "External_ID", "data_type"))
 # Main Program: Create a Compound Node                                         #
 # Input: metabolite_dat and sample_info                                        #
 # Return: Compound_node                                                        #
+# Note: Required source file called "formatting_data_neo4j.R"                  #
 ################################################################################
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))
 
@@ -159,6 +162,7 @@ polar_pos<- subset_data(methodType = method_Type[4], filt_metabolite)
 # dataframe in Neo4j format. 
 # Subset metabolomics samples in sample_info dataframe. 
 mb_sample<- sample_info[sample_info$data_type == "metabolomics",]
+
 # Technology1 : Negative ion mode of interM metabolites (C18-neg)
 filt_interM<- interM_mb %>% select(-"Metabolite")
 new_interM_ab<- get_CompoundIds(filt_interM, entity_Node = Compound_node, 
@@ -208,12 +212,12 @@ matched_metaboliteId<- merge(matched_compoundId,Metabolite_node,
 cp_mb_Edge<- matched_metaboliteId %>% select(c("compound_ID", "metabolite_ID"))
 
 ###############################################################################
-# Main Program: Reformat data in neo4j-admin import format and Save Output
-# Input: compound_node, metabolite_node, cp_mb_Edge 
-# Return: 
-# Note: Required source file called "formatting_data_neo4j.R" 
+# Main Program: Reformat data in neo4j-admin import format and Save Output.   #
+# Input: compound_node, metabolite_node, cp_mb_Edge                           #
+# Return: neo4j_comPound_Node, neo4j_metabolite_Node, neo4j_[4tech]_Edge, and #
+#         neo4j_cp_Mb_Edg                                                     #
+# Note: Required source file called "formatting_data_neo4j.R"                 #
 ###############################################################################
-
 # Process Compound_node in neo4j-import format 
 neo4j_comPound_Node<- reformat_Node_file(Compound_node, old_col="compound_ID", 
                                          new_col="compound_ID:ID", 

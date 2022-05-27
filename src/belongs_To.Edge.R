@@ -1,24 +1,23 @@
 ###############################################################################
-# Script: BELONG_TO_Edge.R
-# Author: Suyeon Kim 
-# Created: March 10, 2022
-# Last edited: March 10, 2022 
-#
-# Goal: The purpose of this script is to create a nodes and edges file in 
-# neo4j bulk importer format (neo4j-admin import tool). 
-# Input: Outputs from 'keggOrthologue.Node_AND_Edge.R' and 'ec.Node_AND_Edge.R'
-# Output: 
-# (in neo4j bulk importer format). 
+# Script: BELONG_TO_Edge.R                                                    #
+# Author: Suyeon Kim                                                          #
+# Created: March 10, 2022                                                     #
+# Last edited: March 10, 2022                                                 #
+#                                                                             #
+# Goal: The purpose of this script is to create edges between 'KeggOrthologue'# 
+#       node and 'EC' node as a neo4j bulk importer format                    #  
+# Input: KO.node.ibd_dataset.csv, EC.node.ibd_dataset.csv,                    #
+#        KEGGOrthology_ECnum.csv                                              #
+# Output: belongs_To.edge.ibd_dataset.csv                                     #
 ###############################################################################
 
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile1<- args[2]
 InFile2<- args[3]
@@ -30,22 +29,15 @@ outName<- args[5]
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
 ###############################################################################
-# Read the Input file into R. 
+# Read the Input file into R.                                                 #
 ###############################################################################
-#InFile1<-"/Users/suyeonkim/OneDrive - University of Nebraska at Omaha/phD_Dissertation/Aim1/KO.node.test2.csv"
-#InFile2<- "/Users/suyeonkim/OneDrive - University of Nebraska at Omaha/phD_Dissertation/Aim1/EC.node.test2.csv"
-#InFile3<- "/Users/suyeonkim/OneDrive - University of Nebraska at Omaha/phD_Dissertation/Aim1/KEGGOrthology_ECnum.csv"
-
-# This should result in a dataframe called 'ko_Node' that contains 
-# 7963 observations of 3 variables. 
+# This should result in a dataframe called 'ko_Node'
 ko_Node<- read.csv(InFile1, header=TRUE, sep=",", check.names=FALSE)
 
-# This should result in a dataframe called 'ec_Node' that contains 
-# 2298 observations of 3 variables. 
+# This should result in a dataframe called 'ec_Node'
 ec_Node<- read.csv(InFile2, header=TRUE, sep=",", check.names=FALSE)
 
-# This should result in a dataframe called 'ec_Node' that contains 
-# 7963 observations of 3 variables. 
+# This should result in a dataframe called 'koEC_info' 
 koEc_info<- read.csv(InFile3, header=TRUE, sep=",")
 
 # 
@@ -68,11 +60,10 @@ remo_koec<- data.frame(KO=rep(ko_ec_edge$KO, sapply(split_multipleIds,length)),
                        EC=unlist(split_multipleIds))
 
 ###############################################################################
-# Main Program: Create a KO-EC edge/relationship 
-# Input: remo_koec
-# Return: 
+# Main Program: Create a KO-EC edge/relationship                              #
+# Input: 'remo_koec' dataframe                                                #         
+# Return: ko_ec_Edge dataframe (ko_ID and ec_ID)                              #
 ###############################################################################
-
 # Merge "KO-EC" Edge and ko_Node" dataframes by 'KO' column. 
 matched_KO<- merge(remo_koec,ko_Node,by=c("KO"))
 # Merge a created previous dataframe called 'matched_KO' and 
@@ -82,10 +73,10 @@ matched_EC<- merge(matched_KO,ec_Node,by=c("EC"))
 ko_ec_Edge<- matched_EC %>% select(c("ko_ID:ID", "ec_ID:ID"))
 
 ###############################################################################
-# Main Program: Reformat data in neo4j-admin import format and Save Output
-# Input: ko_ec_Edge
-# Return: 
-# Note: Required source file called "formatting_data_neo4j.R" 
+# Main Program: Reformat data in neo4j-admin import format and save output    #
+# Input: 'ko_ec_Edge' dataframe                                               #                       
+# Return: neo4j_ko_ec_Edge                                                    #
+# Note: Required source file called "formatting_data_neo4j.R"                 #
 ###############################################################################
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))
 

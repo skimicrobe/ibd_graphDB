@@ -4,24 +4,21 @@
 # Created: April 15, 2022                                                      #
 # Last edited: April 15, 2022                                                  #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
+# Goal: The purpose of this script is to create a KO nodes and sample-KO edges #
+#      file in neo4j bulk importer format                                      #
 # Input: 1) Two processed KEGG Orthologue data (metagenomic AND meproteomic    #
 #           folder) from ibdmdb database are needed.                           #                          
-#        2) sample.node.[NAME WILL BE VARIED! - 'test1' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
+#        2) sample.node.[output argument].csv                                  #
 # Output: a KeggOrthologue node and sample_KeggOrthologue edge list            #
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile1<- args[2]
 InFile2<- args[3]
@@ -44,6 +41,8 @@ processing_Dat<- function(all_ko){
   return(ko_KEGGinfo_ec)
 }
 
+# In this function, we want to replace the KO name and sample ID with 
+# the created sample Ids and KO Ids. 
 get_Ids<- function(abundance, entity_Node, entity, sample_info){
   print(dim(abundance))
   # Merge abudance data with KO Node dataframe based on entity
@@ -53,7 +52,7 @@ get_Ids<- function(abundance, entity_Node, entity, sample_info){
     sample_info[match(colnames(filter_cols[,-ncol(filter_cols)]), 
                       sample_info$External_ID),1]
   colnames(filter_cols)[1:ncol(filter_cols)-1]<- matched_sampleIndex
-  # Create abundance table only with created gene-ids and sample-ids
+  # Create abundance table only with created KO-ids and sample-ids
   final_ab<- cbind("ko_ID"=filter_cols$ko_ID, 
                    filter_cols[,-ncol(filter_cols)])
   print("**********Before Reshape final_ab *******")
@@ -62,6 +61,7 @@ get_Ids<- function(abundance, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format.
 reshape_dat<- function(new_abundance, by_melt){
   reshape_dat<- melt(new_abundance, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID:ID"=as.character(reshape_dat$variable), 
@@ -101,7 +101,7 @@ print(dim(sample_N))
 ################################################################################
 # Main Program: Create a KEGG Orthologue (KO) Node                             #
 # Input: mgx_ko and mpx_ko                                                     #
-# Return:                                                                      #
+# Return: KO node dataframe                                                    #
 ################################################################################
 print("Calling formatting_data_neo4j.R")
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))

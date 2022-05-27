@@ -1,8 +1,8 @@
 ###############################################################################
-# Goal: Filtering MGX/MTX/MPX abundance data    
-# Name: Suyeon Kim                             
-# Creation Date: Mar-06-2022                   
-# Last updated: Mar-06-2022                    
+# Goal: Filtering MGX/MTX/MPX abundance data                                  #
+# Name: Suyeon Kim                                                            #
+# Creation Date: Mar-06-2022                                                  #
+# Last updated: Mar-06-2022                                                   #
 ###############################################################################
 
 # In this function, we want to remove any rows that do have species information

@@ -4,23 +4,20 @@
 # Created: April 16, 2022                                                      #
 # Last edited: April 16, 2022                                                  #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
+# Goal: The purpose of this script is to create a EC nodes and sample-EC edges #
+#       file in neo4j bulk importer format                                     #
 # Input: 1) Three processed EC data (metagenomic, metatranscriptomic,          #
 #           meproteomic folder) from ibdmdb database are needed.               #
-#        2) sample.node.[NAME WILL BE VARIED! - 'test2' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
+#        2) sample.node.[output argument].csv                                  #
 # Output: a EC node and sample_EC edge list                                    #  
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile1<- args[2]
 InFile2<- args[3]
@@ -40,16 +37,18 @@ processing_Dat<- function(all_EC){
   return(split_info)
 }
 
+# In this function, we want to replace the EC name and sample ID with 
+# the created sample Ids and ec Ids.
 get_Ids<- function(abundance, entity_Node, entity, sample_info){
   print(dim(abundance))
-  # Merge abudance data with Pathway Node dataframe based on entity
+  # Merge abudance data with EC Node dataframe based on entity
   merged_ecId<- merge(abundance, entity_Node, by=c(entity))
   filter_cols<- merged_ecId %>% select(-c(entity, "Enzyme"))
   matched_sampleIndex<- 
     sample_info[match(colnames(filter_cols[,-ncol(filter_cols)]), 
                       sample_info$External_ID),1]
   colnames(filter_cols)[1:ncol(filter_cols)-1]<- matched_sampleIndex
-  # Create abundance table only with created gene-ids and sample-ids
+  # Create abundance table only with created ec-ids and sample-ids
   final_ab<- cbind("ec_ID"=filter_cols$ec_ID, 
                    filter_cols[,-ncol(filter_cols)])
   print("**********Before Reshape final_ab *******")
@@ -58,6 +57,7 @@ get_Ids<- function(abundance, entity_Node, entity, sample_info){
   return(final_ab)
 }
 
+# In this function, we convert dataframe from wide to long format. 
 reshape_dat<- function(new_abundance, by_melt){
   reshape_dat<- melt(new_abundance, id.vars=c(by_melt))
   final_ab<- data.frame(cbind("s_ID:ID"=as.character(reshape_dat$variable), 
@@ -93,6 +93,7 @@ print("*************Size of ec-dataframe Input***************")
 print(dim(mgx_ec))
 print(dim(mtx_ec))
 print(dim(mpx_ec))
+
 # Lets read the 'sample node' file into R  
 sample_N<- read.csv(sample_node, header=T, sep=",",check.names=FALSE)
 sample_info<- sample_N %>% select(c("s_ID:ID", "External_ID", "data_type"))
@@ -100,7 +101,7 @@ sample_info<- sample_N %>% select(c("s_ID:ID", "External_ID", "data_type"))
 ################################################################################
 # Main Program: Create a Enzyme Commission (EC) Node                           #
 # Input: mgx_ec, mtx_ec, and mpx_ec                                            #
-# Return:                                                                      #
+# Return: ec_node dataframe                                                    #
 ################################################################################
 source(paste0(sourceDir,"/","formatting_data_neo4j.R"))
 
@@ -170,7 +171,7 @@ ec_mpx_reshp<- reshape_dat(ec_mpx_abundance, by_melt="ec_ID")
 ################################################################################
 # Main Program: Reformat data in neo4j-admin import format and Save Output     #
 # Input: EC_node, ec_mgx_reshp, ec_mtx_reshp, and ec_mpx_resh                  #            
-# Return:                                                                      #
+# Return: neo4j_EC_node, noe4j_mgx/mtx/mpx_Edge                                #
 # Note: Required source file called "formatting_data_neo4j.R"                  #
 ################################################################################
 print("*************Formatting dataframe in Neo4j format*********************")

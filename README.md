@@ -35,7 +35,7 @@ From command line
 * `Output relationship files`: participant_sample.edge.ibd_dataset.csv
 * `ibd_dataset`: suffix for the output files of this step
 ```
-Rscript src/processed_metaData.R src/ Input/hmp2_metadata-20180820.csv
+Rscript src/processed_metaData.R src/ Input/hmp2_metadata-20180820.csv skim_newmeta.tsv
 Rscript src/participant_sample.Node_AND_Edge.R src/ input/correct_metadata.csv ibd_dataset
 ```
 

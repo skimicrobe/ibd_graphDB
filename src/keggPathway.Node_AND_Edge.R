@@ -4,24 +4,21 @@
 # Created: April 15, 2022                                                      #
 # Last edited: April 15, 2022                                                  #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
+# Goal: The purpose of this script is to create a KeggPathway node and sample- #
+#       KeggPathway edges file in neo4j bulk importer format                   #
 # Input: 1) Three processed keggPathway data (metagenomic, metatranscriptomic, #
 #           from ibdmdb database are needed.                                   #
-#        2) sample.node.[NAME WILL BE VARIED! - 'test2' is at time of output   #
-#           from the script called 'participant_sample.Node_AND_Edge.R'].csv   #
+#        2) sample.node.[output argument].csv                                  #
 # Output: a keggPathway node and sample_keggPathway edge list                  #
-# (in neo4j bulk importer format).                                             #
 ################################################################################
 
 library(stringr)
 library(dplyr)
 library(reshape2)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile1<- args[2]
 InFile2<- args[3]
@@ -32,8 +29,8 @@ outName<- args[5]
 # "stringsAsFactors=FALSE".
 source(paste0(sourceDir,"/","getOption_setOption.R"))
 
-# In this function, we want to split "EC" column into multiple columns. Input 
-# must have a column (called "EC")
+# In this function, we want to split "Pathway" column into multiple columns. Input 
+# must have a column (called "Pathway")
 processing_Dat<- function(all_Pathway){
   split_info<- data.frame(str_split_fixed(all_Pathway$Pathway, "\\:",2))
   colnames(split_info)<- c("PWY","Pathway")
@@ -49,7 +46,7 @@ get_Ids<- function(abundance, entity_Node, entity, sample_info){
     sample_info[match(colnames(filter_cols[,-ncol(filter_cols)]), 
                       sample_info$External_ID),1]
   colnames(filter_cols)[1:ncol(filter_cols)-1]<- matched_sampleIndex
-  # Create abundance table only with created gene-ids and sample-ids
+  # Create abundance table only with created keggpathway-ids and sample-ids
   final_ab<- cbind("pathway_ID"=filter_cols$path_ID, 
                    filter_cols[,-ncol(filter_cols)])
   print("**********Before Reshape final_ab *******")
@@ -117,7 +114,7 @@ Pathway_node<- cbind("path_ID"=path_uniqIds, final_PathNode)
 ################################################################################
 # Main Program: Create a Sample-Pathway Edge                                   #                         
 # Input: Pathway_node, sample_info, filt_mgx, filt_mtx                         #
-# Return:                                                                      #
+# Return: path_mgx_reshp, path_mtx_reshp dataframe                             #
 ################################################################################
 # Pre-process a column containing "Pathway" in 'mgx_path' dataframe.   
 pInf_mgx<- processing_Dat(filt_mgx)
@@ -144,7 +141,7 @@ path_mtx_reshp<- reshape_dat(path_mtx_abundance, by_melt="pathway_ID")
 ################################################################################
 # Main Program: Reformat data in neo4j-admin import format and Save Output     #
 # Input: Pathway_node, path_mgx_reshp and path_mtx_reshp                       #
-# Return:                                                                      #
+# Return: neo4j_Path_Node, neo4j_mgx_Edge, neo4j_mtx_Edge                      #
 # Note: Required source file called "formatting_data_neo4j.R"                  #
 ################################################################################
 print("*************Formatting dataframe in Neo4j format*********************")

@@ -4,8 +4,8 @@
 # Created: Feb 22, 2022                                                        #  
 # Last edited: Feb 25, 2022                                                    #
 #                                                                              #
-# Goal: The purpose of this script is to create a nodes and edges file in      #
-# neo4j bulk importer format (neo4j-admin import tool).                        #
+# Goal: The purpose of this script is to create a Participant, sample nodes and# 
+#     particiapnt_sample edges file in neo4j bulk importer format              #
 # Input: HMP2 metadata from ibdmdb database. [Required editing]: We used output#
 #        from 'merged_clinicalData.R'                                          # 
 # Output: a participant node, a sample node, and participant_sample edge list  #  
@@ -16,10 +16,9 @@
 library(dplyr)
 library(DataExplorer)
 
-#!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-#q()
+
 sourceDir <- args[1]
 InFile<- args[2]
 outName<- args[3]

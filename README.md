@@ -6,9 +6,6 @@ Contact the author at suyeonkim [at] unomaha.edu. This version has been tested f
 ## Steps for populating the multi-omics graph database
 ![graphDB_diagram.png](graphDB_diagram_IP_OP.png)
 
-### Pre-requisites
-Please make sure you have Conda installed (java). 
-
 #### Installation Neo4j and running a local database 
 To populate our graph database model, it needs to able to access a Neo4j database. Here, the instracutions below are to run the Neo4j via a server on macOS compouters. 
 

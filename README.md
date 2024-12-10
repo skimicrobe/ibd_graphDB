@@ -2,7 +2,10 @@
 
 Multi-Omics integrated graph database. Our graph database provides a useful analytical platform to help a better understanding of integrated data. The current version of model is specifically used the multi-omcis datasets from 'The Inflammatory Bowel Disease Multi'omics Database (IBDMDB)' (Lloyd-Price et al. 2019). Neo4j is a graph database management system that uses a graph database model. Our multi-omics graph database is highly queryalbe and provides several case studies that utilize simple as well as complex queries for studying IBD. Each step for populating our graph DB will be deatiled below. 
 
-Contact the author at suyeonkim [at] unomaha.edu. This version has been tested for OSX. 
+Contact the author at suyeonkim [at] unomaha.edu. This version has been tested for OSX.
+
+**If you use our pipeline in your work, please cite the paper:** <br />
+Suyeon Kim, Ishwor Thapa & Hesham Ali [A multi-omics graph database for data integration and knowledge extraction](https://dl.acm.org/doi/abs/10.1145/3535508.3545517)
 ## Steps for populating the multi-omics graph database
 ![graphDB_diagram.png](graphDB_diagram_IP_OP.png)
 

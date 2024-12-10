@@ -127,4 +127,8 @@ dbms.default_database=ibd
 ```
 ./neo4j start
 ```
+## How to cite 
+[APA Style] Kim, S., Thapa, I., & Ali, H. (2022, August). A multi-omics graph database for data integration and knowledge extraction. In Proceedings of the 13th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (pp. 1-6).
+
+
 
